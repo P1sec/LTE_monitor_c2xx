@@ -1,0 +1,21 @@
+<!-- $Id: WSDG_meta_info.xml 45906 2012-11-04 17:27:28Z wmeier $ -->
+
+<bookinfo>
+  <title><inlinegraphic entityref="WiresharkLogo" valign="middle" format="PNG"/> &DocumentTitle;</title>
+  <subtitle>&DocumentSubTitle;</subtitle>
+  <authorgroup>
+    <author><firstname>&AuthorFirstName;</firstname><surname>&AuthorSurname;</surname>
+      <affiliation><orgname>&AuthorOrgName;</orgname></affiliation>
+    </author>
+  </authorgroup>
+  <!--<edition>&DocumentEdition;</edition>
+  <pubdate>&DocumentPubDate;</pubdate>-->
+  <copyright><year>&DocumentCopyrightYear;</year>
+    <holder>&DocumentCopyrightHolder;</holder>
+  </copyright>
+
+<legalnotice>
+  &DocumentLegalNotice;
+</legalnotice>
+
+</bookinfo>

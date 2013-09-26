@@ -1,0 +1,6 @@
+##
+## $Id: Custom.common 44384 2012-08-09 16:42:31Z etxrab $
+## Here you can add custom crypto files
+#
+
+CUSTOM_CRYPTO_SRC = 

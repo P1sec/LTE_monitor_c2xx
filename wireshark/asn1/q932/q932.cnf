@@ -1,0 +1,34 @@
+# q932.cnf
+# Q.932 conformation file
+# 2007  Tomas Kukosa
+
+# $Id: q932.cnf 47992 2013-03-01 23:53:11Z rbalint $
+
+#.PDU
+
+InterpretationComponent
+NetworkFacilityExtension
+NetworkProtocolProfile
+
+#.EXPORTS EXTERN VALS_WITH_TABLE
+
+# Addressing-Data-Elements
+PresentedAddressScreened
+PresentedAddressUnscreened
+PresentedNumberScreened WS_DLL
+PresentedNumberUnscreened WS_DLL
+Address
+PartyNumber WS_DLL
+PartySubaddress WS_DLL
+ScreeningIndicator
+PresentationAllowedIndicator
+
+#.FIELD_RENAME
+
+# Addressing-Data-Elements
+PresentedNumberScreened/presentationAllowedNumber      presentationAllowedNumberScreened
+PresentedAddressScreened/presentationRestrictedAddress presentationRestrictedAddressScreened
+PresentedNumberScreened/presentationRestrictedNumber   presentationRestrictedNumberScreened
+
+#.END
+

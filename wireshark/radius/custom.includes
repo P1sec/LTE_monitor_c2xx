@@ -1,0 +1,4 @@
+#
+# Version $Id: custom.includes 47224 2013-01-23 12:08:15Z etxrab $
+# Add custom Radius files her in the format $INCLUDE dictionary.foo
+#

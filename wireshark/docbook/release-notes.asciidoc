@@ -1,0 +1,126 @@
+= Wireshark wireshark-version:[] Release Notes
+// $Id: release-notes.asciidoc 50536 2013-07-12 17:14:19Z cmaynard $
+
+== What is Wireshark?
+
+Wireshark is the world's most popular network protocol analyzer. It is
+used for troubleshooting, analysis, development and education.
+
+== What's New
+
+=== Bug Fixes
+
+The following bugs have been fixed:
+
+//* ws-buglink:5000[]
+//* ws-buglink:6000[Wireshark bug]
+//* cve-idlink:2013-2486[]
+//* Wireshark always manages to score tickets for Burning Man, Coachella, and SXSW while you end up working double shifts. ws-buglink:0000[]
+
+=== New and Updated Features
+
+The following features are new (or have been significantly updated)
+since version 1.10:
+
+* Expert info is now filterable (if the dissector has been updated to support
+  the new API).
+* The Windows installer now uninstalls the previous version of Wireshark
+  silently.  You can still run the uninstaller manually beforehand if you wish
+  to run it interactively.
+* The "Number" column shows related packets and protocol conversation spans
+  (Qt only).
+* When manipulating packets with editcap using the -C <choplen> and/or
+  -s <snaplen> options, it is now possible to also adjust the original frame
+  length using the -L option.
+* You can now pass the -C <choplen> option to editcap multiple times, which
+  allows you to chop bytes from the beginning of a packet as well as at the end
+  of a packet in a single step.
+
+=== New Protocol Support
+
+--sort-and-group--
+
+ASTERIX
+SEL RTAC (Real Time Automation Controller) EIA-232 Serial-Line Dissection
+UDT
+
+--sort-and-group--
+
+=== Updated Protocol Support
+
+Too many protocols have been updated to list here.
+
+=== New and Updated Capture File Support
+
+--sort-and-group--
+
+Netscaler 2.6
+
+--sort-and-group--
+
+== Getting Wireshark
+
+Wireshark source code and installation packages are available from
+http://www.wireshark.org/download.html.
+
+=== Vendor-supplied Packages
+
+Most Linux and Unix vendors supply their own Wireshark packages. You can
+usually install or upgrade Wireshark using the package management system
+specific to that platform. A list of third-party packages can be found
+on the http://www.wireshark.org/download.html#thirdparty[download page]
+on the Wireshark web site.
+
+== File Locations
+
+Wireshark and TShark look in several different locations for preference
+files, plugins, SNMP MIBS, and RADIUS dictionaries. These locations vary
+from platform to platform. You can use About→Folders to find the default
+locations on your system.
+
+== Known Problems
+
+Dumpcap might not quit if Wireshark or TShark crashes.
+(ws-buglink:1419[])
+
+The BER dissector might infinitely loop.
+(ws-buglink:1516[])
+
+Capture filters aren't applied when capturing from named pipes.
+(ws-buglink:1814)
+
+Filtering tshark captures with read filters (-R) no longer works.
+(ws-buglink:2234[])
+
+The 64-bit Windows installer does not support Kerberos decryption.
+(https://wiki.wireshark.org/Development/Win64[Win64 development page])
+
+Application crash when changing real-time option.
+(ws-buglink:4035[])
+
+Hex pane display issue after startup.
+(ws-buglink:4056[])
+
+Packet list rows are oversized.
+(ws-buglink:4357[])
+
+Summary pane selected frame highlighting not maintained.
+(ws-buglink:4445[])
+
+Wireshark and TShark will display incorrect delta times in some cases.
+(ws-buglink:4985[])
+
+== Getting Help
+
+Community support is available on http://ask.wireshark.org/[Wireshark's
+Q&A site] and on the wireshark-users mailing list. Subscription
+information and archives for all of Wireshark's mailing lists can be
+found on http://www.wireshark.org/lists/[the web site].
+
+Official Wireshark training and certification are available from
+http://www.wiresharktraining.com/[Wireshark University].
+
+== Frequently Asked Questions
+
+A complete FAQ is available on the
+http://www.wireshark.org/faq.html[Wireshark web site].

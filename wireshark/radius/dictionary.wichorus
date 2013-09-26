@@ -1,0 +1,16 @@
+# -*- text -*-
+#
+#	Dictionary for WiChorus Inc. VSA's.
+# 	http://www.wichorus.com/
+#
+# Version: 	$Id: dictionary.wichorus 37375 2011-05-24 16:30:32Z wmeier $
+#
+
+VENDOR		Wichorus			27030
+
+BEGIN-VENDOR	Wichorus
+
+ATTRIBUTE	Wichorus-Policy-Name			1	string
+ATTRIBUTE	Wichorus-User-Privilege			2	string
+
+END-VENDOR 	Wichorus

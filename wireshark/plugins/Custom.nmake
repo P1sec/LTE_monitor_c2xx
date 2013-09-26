@@ -1,0 +1,32 @@
+#
+# $Id$
+#
+
+include ..\config.nmake
+
+all: c2xx 
+
+c2xx:: 
+	cd c2xx 
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake
+	cd ..
+
+clean:
+	cd c2xx 
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake clean
+	cd ..
+
+distclean: clean
+	cd c2xx 
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake distclean
+	cd ..
+
+maintainer-clean: distclean
+	cd c2xx 
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake maintainer-clean
+	cd ..
+
+install-plugins:
+!IFDEF ENABLE_LIBWIRESHARK
+	xcopy c2xx\*.dll ..\$(INSTALL_DIR)\plugins\$(VERSION) /d
+!ENDIF

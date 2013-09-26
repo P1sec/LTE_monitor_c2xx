@@ -1,0 +1,15 @@
+# -*- text -*-
+# Colubris dictionary - dictionary.colubris
+#
+VENDOR		Colubris			8744
+#
+#       Vendor-specific attributes
+#
+#	$Id: dictionary.colubris 34995 2010-11-21 18:57:21Z wmeier $
+#
+BEGIN-VENDOR	Colubris
+
+ATTRIBUTE	Colubris-AVPair				0	string
+ATTRIBUTE	Colubris-Intercept			1	integer
+
+END-VENDOR	Colubris

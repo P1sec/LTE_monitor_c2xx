@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# $Id: script 24640 2008-03-15 18:31:52Z gerald $
+
+
+echo $1;

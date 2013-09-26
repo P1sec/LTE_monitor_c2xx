@@ -1,0 +1,32 @@
+#
+# $Id: Custom.nmake.example 45142 2012-09-25 21:02:13Z jake $
+#
+
+include ..\config.nmake
+
+all: foo
+
+foo:: 
+	cd foo
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake
+	cd ..
+
+clean:
+	cd foo
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake clean
+	cd ..
+
+distclean: clean
+	cd foo
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake distclean
+	cd ..
+
+maintainer-clean: distclean
+	cd foo
+	$(MAKE) /$(MAKEFLAGS) -f Makefile.nmake maintainer-clean
+	cd ..
+
+install-plugins:
+!IFDEF ENABLE_LIBWIRESHARK
+	xcopy foo\*.dll ..\$(INSTALL_DIR)\plugins\$(VERSION) /d
+!ENDIF
