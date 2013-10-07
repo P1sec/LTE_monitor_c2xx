@@ -924,11 +924,13 @@ static void dissect_c2xx_data(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
   if(tree) {
     item = proto_tree_add_item(tree, proto_c2xx, tvb, 0, 6, ENC_NA);
     c2xx_tree = proto_item_add_subtree(item, ett_c2xx);
-    offset += 6;
+
+    if(c2xx_tree) {    
+        offset += 6;
 
 // Ethernet II - bien sauf que les trames depassent 1400
-    call_dissector(eth_withoutfcs_handle, tvb_new_subset_remaining(tvb, offset), pinfo, tree);
-
+        call_dissector(eth_withoutfcs_handle, tvb_new_subset_remaining(tvb, offset), pinfo, tree);
+    }
 // ou IP directement
 /*
     offset += 6;                                       // dest mac
