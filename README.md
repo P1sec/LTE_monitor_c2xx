@@ -11,6 +11,7 @@ It includes:
 The SAMSUNG GT-B3730 and GT-B3740 are USB dongles that have LTE capabilities. 800Mhz and 2600Mhz band. the later is capable of 3G, 2G..
 
 A reverse engineering task has been done on the dongle in order to understand its protocol. More info are available at:
+
 http://labs.p1sec.com/2013/08/05/samsung-lte-usb-stick-gt-b3730b3740-hacking/
 
 Compiling
