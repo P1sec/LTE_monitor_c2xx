@@ -1,25 +1,3 @@
-/* Samsung GT-B3730 /GT-B3740 tap port with LTE RRC/NAS info
- * 
- *
- * By Ramtin Amin <ramtin@p1sec.com>
- *    Xavier Martin <xavier.martin@p1sec.com>
- *
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -43,7 +21,7 @@ int gsmtap_fd=0;
 struct sockaddr_in si_other;
 
 
-int gsmtap_open(void)
+int gsmtap_open(char *ip)
 {
   
   int s, i;
@@ -56,7 +34,7 @@ int gsmtap_open(void)
   memset((char *) &si_other, 0, sizeof(si_other));
   si_other.sin_family = AF_INET;
   si_other.sin_port = htons(GSMTAP_UDP_PORT);
-  if (inet_aton("192.168.0.13", &si_other.sin_addr)==0) {
+  if (inet_aton(ip, &si_other.sin_addr)==0) {
     fprintf(stderr, "inet_aton() failed\n");
     exit(1);
   }  
@@ -74,6 +52,7 @@ void gsmtap_send(char *buf, int len)
 
   gh = (struct gsmtap_hdr*)tosend;
   
+  gh->type = GSMTAP_TYPE_C2XX;
   gh->version = GSMTAP_VERSION;
   gh->hdr_len = sizeof(struct gsmtap_hdr)/4;
   gh->sub_type = GSMTAP_CHANNEL_UNKNOWN;

@@ -1,25 +1,3 @@
-/* Samsung GT-B3730 /GT-B3740 tap port with LTE RRC/NAS info
- * 
- *
- * By Ramtin Amin <ramtin@p1sec.com>
- *    Xavier Martin <xavier.martin@p1sec.com>
- *
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
@@ -31,6 +9,8 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/wait.h>
+#include "at_cmd.h"
+
 
 unsigned char *atcmd[] = {
   "AT",
@@ -55,66 +35,24 @@ unsigned char *atcmd[] = {
   "AT+CGACT=1,1"
 };
 
-/*
-unsigned char *atcmd[] = {
-  "AT",
-  "ATE0",
-  "AT+CGREG=2",
-  "AT+CFUN=5",
-  "AT+MODESELECT=3",
-  "AT+CHANGEALLPATH=1",
-  "AT+CGACT?",
-  "AT+CGDCONT=1,\"IP\",\"orange.fr\"",
-  "AT+CGACT?",
-  "AT+CGATT=1",
-  "AT+CGACT=1,1",
-  "AT+CGACT=1,1",
-};
-*/
-
-
-
 int state=1;
 int nwstate = 0;
 int err=0;
-void parse_at_cmd(char *c)
-{
-  int i;
-  char *ok = NULL;
-  char *nwstateind = NULL;
-  char *erra = NULL ;
+atctx_t *mctx;
 
- 
-  ok = strstr(c,"OK");
-  erra = strstr(c,"ERROR");
-  nwstateind = strstr(c,"+NWSTATEIND:");
-
-  printf("received |%s|\n",c);
-  if(ok){
-    printf("OK\n");
-    state++;
-  }
-  if(nwstateind){
-    printf("nwstateind\n");
-    sscanf(nwstateind + 12,"%d\r\n",&nwstate);
-    printf("new nwstate = %d\n",nwstate);
-  }
-
-  if(erra){
-    printf("ERROR\n");
-    err=1;
-  }
-  return;
-}
 
 
 void modem_response(char *c, int len)
 {
   int i;
-  
+
   printf("received: (%d)\n",len);
+  printf("%s\n",c);
   c[len] = 0;
-  parse_at_cmd(c);
+
+  
+  at_parse(mctx, c, len);
+  
 }
 
 void send_at_cmd(char *c)
@@ -123,15 +61,18 @@ void send_at_cmd(char *c)
   
   memset(buf,0,100);
   sprintf(buf,"%s\r\n",c);
-  printf("sending |%s|\n",buf);
+  //printf("sending |%s|\n",buf);
   lte_send_modem(buf);
   
 }
 
-void modem_process()
+void modem_process(unsigned char *apn)
 {
   
   static int curstate = 0;
+  char myapn[]="AT+CGDCONT=1,\"IP\",\"%s\"";
+  char tmp[200];
+
 
   if(err){
     send_at_cmd(atcmd[state]);
@@ -141,12 +82,201 @@ void modem_process()
 
   if(curstate != state){
     if(state <= 18){
-      send_at_cmd(atcmd[state]);
+      if(state == 17){
+	sprintf(tmp,myapn,apn);
+	send_at_cmd(tmp);
+      } else {
+	send_at_cmd(atcmd[state]);
+      }
       curstate = state;
       sleep(1);
     }else {
       connected();
     }
   } 
+}
+
+
+
+
+
+
+void default_cb(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+  printf("default response: %s(",name);
+  for(i = 0; i < argc; i++){
+    if(argv[i])
+      printf("%s, ",argv[i]);
+    else printf("nil, ");
+  }
+  printf(")\n");
+}
+
+void default_cmd_cb(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+  printf("default command: %s(",name);
+  for(i = 0; i < argc; i++){
+    if(argv[i])
+      printf("%s, ",argv[i]);
+    else printf("nil, ");
+  }
+  printf(")\n");
+}
+
+void myok_cb(atctx_t *ctx, void *user)
+{
+  //printf("GOT OK for %s\n", ctx->last_cmd);
+  state++;
+}
+
+void mycallback(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+  for(i = 0; i < argc; i++){
+    printf("%s\n",argv[i]);
+  }
+}
+
+
+void h_ate1(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+  printf("Called: %s\n",__FUNCTION__);
+}
+
+void h_cscs(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+  printf("Called: %s\n",__FUNCTION__);
+}
+
+
+
+void h_cmgf(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_changeallpath(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_versname(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cmee(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cgreg(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cfun(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cpin(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cnum(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_modeselect(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_csq(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_copsname(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cgact(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cgdcont(char *name, int argc, char **argv, void *user_data)
+{
+  printf("Called: %s\n",__FUNCTION__);
+}
+void h_cgatt(char *name, int argc, char **argv, void *user_data)
+{
+  printf("CALLED %s\n",__FUNCTION__);
+}
+
+void h_nwstateind(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+
+  printf("CALLED %s ->",__FUNCTION__);
+  for(i =0 ;i < argc; i++){
+    printf("%s\n",argv[i]);
+  }
+  printf("\n");
+}
+
+
+
+void h_activeratind(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+
+  printf("CALLED %s ->",__FUNCTION__);
+  for(i =0 ;i < argc; i++){
+    printf("%s\n",argv[i]);
+  }
+  printf("\n");
+}
+
+
+
+void h_modechangeind(char *name, int argc, char **argv, void *user_data)
+{
+  int i;
+
+  printf("CALLED %s ->",__FUNCTION__);
+  for(i =0 ;i < argc; i++){
+    printf("%s\n",argv[i]);
+  }
+  printf("\n");
+}
+
+
+
+
+
+void modem_at_init()
+{
+  //  atctx_t *ctx;
+  
+  mctx = at_init_ctx(myok_cb, NULL,default_cb, default_cmd_cb, NULL);
+
+  at_add_handler(mctx, "ATE1", AT_TYPE_RESPONSE, h_ate1);
+  at_add_handler(mctx, "CSCS", AT_TYPE_RESPONSE, h_cscs);
+  at_add_handler(mctx, "CMGF", AT_TYPE_RESPONSE, h_cmgf);
+  //at_add_handler(mctx, "CHANGEALLPATH", AT_TYPE_RESPONSE, h_changeallpath);
+  at_add_handler(mctx, "VERSNAME", AT_TYPE_RESPONSE, h_versname);
+  at_add_handler(mctx, "CMEE", AT_TYPE_RESPONSE, h_cmee);
+  at_add_handler(mctx, "CGREG", AT_TYPE_RESPONSE, h_cgreg);
+  at_add_handler(mctx, "CFUN", AT_TYPE_RESPONSE, h_cfun);
+  //at_add_handler(mctx, "CPIN", AT_TYPE_RESPONSE, h_cpin);
+  at_add_handler(mctx, "CNUM", AT_TYPE_RESPONSE, h_cnum);
+  at_add_handler(mctx, "MODESELECT", AT_TYPE_RESPONSE, h_modeselect);
+  at_add_handler(mctx, "CSQ", AT_TYPE_RESPONSE, h_csq);
+  at_add_handler(mctx, "COPSNAME", AT_TYPE_RESPONSE, h_copsname);
+  at_add_handler(mctx, "CGACT", AT_TYPE_RESPONSE, h_cgact);
+  at_add_handler(mctx, "CGDCONT", AT_TYPE_RESPONSE, h_cgdcont);
+  at_add_handler(mctx, "CGATT", AT_TYPE_RESPONSE, h_cgatt);
+  at_add_handler(mctx, "NWSTATEIND", AT_TYPE_RESPONSE, h_nwstateind);
+  at_add_handler(mctx, "MODECHANGEIND", AT_TYPE_RESPONSE, h_modechangeind);
+  at_add_handler(mctx, "ACTIVERATIND", AT_TYPE_RESPONSE, h_activeratind);
+
 
 }

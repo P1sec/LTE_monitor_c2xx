@@ -1,4 +1,3 @@
-
 /**
  *  tapcfg - A cross-platform configuration utility for TAP driver
  *  Copyright (C) 2008-2011  Juho Vähä-Herttua

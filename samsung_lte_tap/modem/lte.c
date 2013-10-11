@@ -1,25 +1,3 @@
-/* Samsung GT-B3730 /GT-B3740 tap port with LTE RRC/NAS info
- * 
- *
- * By Ramtin Amin <ramtin@p1sec.com>
- *    Xavier Martin <xavier.martin@p1sec.com>
- *
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
@@ -54,7 +32,7 @@
 #define MODEM_ENDPOINT_OUT		0x4
 #define	MODEM_ENDPOINT_IN		0x83
 
-#define MAX_PACKET_LEN 4000
+#define MAX_PACKET_LEN 0x4000 /*4000*/
 
 static unsigned char read_buffer_modem[MAX_PACKET_LEN];
 static unsigned char read_buffer_ctrl[MAX_PACKET_LEN];
@@ -277,13 +255,13 @@ int set_coe(int fd)
   flags = fcntl(fd, F_GETFD);
   if (flags == -1)
     {
-      printf("failed to set close-on-exec flag on fd %d", fd);
+      printf("failed to set close-on-exec flag on fd %d\n", fd);
       return -1;
     }
   flags |= FD_CLOEXEC;
   if (fcntl(fd, F_SETFD, flags) == -1)
     {
-      printf("failed to set close-on-exec flag on fd %d", fd);
+      printf("failed to set close-on-exec flag on fd %d\n", fd);
       return -1;
     }
 
@@ -296,7 +274,7 @@ static int if_create()
 {
   tap_fd = create_tap(tap_dev);
   if (tap_fd < 0) {
-    printf("failed to allocate tap interface");
+    printf("failed to allocate tap interface\n");
     printf(
 	      "You should have TUN/TAP driver compiled in the kernel or as a kernel module.\n"
 	      "If 'modprobe tun' doesn't help then recompile your kernel.");
@@ -304,7 +282,7 @@ static int if_create()
   }
   
   //tap_set_hwaddr(tap_fd, tap_dev, wd_status.mac);
-  tap_set_mtu(tap_fd, tap_dev, 1386);
+  tap_set_mtu(tap_fd, tap_dev, 2360/*1386*/);
   set_coe(tap_fd);
   return 0;
 }
@@ -374,7 +352,7 @@ void cb_remove_pollfd(int fd, void *user_data)
 static void cb_req_modem(struct libusb_transfer *transfer)
 {
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED) {
-    printf("async bulk read error %d", transfer->status);
+    printf("async bulk read error %d\n", transfer->status);
     if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE) {
       device_disconnected = 1;
       return;
@@ -383,14 +361,14 @@ static void cb_req_modem(struct libusb_transfer *transfer)
     modem_response(transfer->buffer, transfer->actual_length);
   }
   if (libusb_submit_transfer(req_transfer_modem) < 0) {
-    printf("async read transfer sumbit failed");
+    printf("async read transfer sumbit failed\n");
   }
 }
 
 static void cb_req_ctrl(struct libusb_transfer *transfer)
 {
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED) {
-    printf("async bulk read error %d", transfer->status);
+    printf("async bulk read error %d\n", transfer->status);
     if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE) {
       device_disconnected = 1;
       return;
@@ -400,7 +378,7 @@ static void cb_req_ctrl(struct libusb_transfer *transfer)
     //hexprintf(transfer->buffer, transfer->actual_length);
   }
   if (libusb_submit_transfer(req_transfer_ctrl) < 0) {
-    printf("async read transfer sumbit failed");
+    printf("async read transfer sumbit failed\n");
   }
 }
 
@@ -425,7 +403,7 @@ static int alloc_transfers(void)
 }
 
 
-int main()
+int main(int argc, char **argv)
 {
   int i;
   char toto;
@@ -435,11 +413,36 @@ int main()
   char buf[1000];
   char cmd[100];
   int received,r;
+  char *debug_ip = NULL;
+  char *apn=NULL;
+  int c;
+  int debug=0;
+
+  opterr = 0;
+  while ((c = getopt (argc, argv, "va:d:")) != -1){
+    switch (c){
+    case 'v':
+      break;
+    case 'd':
+      debug_ip = optarg;
+      debug=1;
+      break;
+    case 'a':
+      apn = optarg;
+      break;
+    }
+  }
   
+  if(!apn){
+    printf("Usage: ./lte -a APN_NAME [-d GSM_TAP_IP]\nex: ./lte -a orange.fr [-d 192.168.0.1]\n");
+    return -1;
+  }
+
+  modem_at_init();
 
   libusb_init(&context);
   libusb_set_debug(context, 3);
-  devh = init_modem(1);
+  devh = init_modem(debug);
 
 
   sleep(1);
@@ -453,12 +456,13 @@ int main()
   libusb_submit_transfer(req_transfer_modem);  
   libusb_submit_transfer(req_transfer_ctrl);  
 
-  gsmtap_open();
-  
+  if(debug){
+    gsmtap_open(debug_ip);
+  }
   while(1){
-    process_events_once(500);
+    process_events_once(100);
     //  printf(".\n");
-    modem_process();
+    modem_process(apn);
   }
 
   release_usb_device(devh);
