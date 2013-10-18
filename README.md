@@ -26,7 +26,7 @@ http://libusbx.org/
 
 
 ```
-$ cd mod_swtich/
+$ cd mod_switch/
 $ make
 $ cd ..
 $ cd modem/
