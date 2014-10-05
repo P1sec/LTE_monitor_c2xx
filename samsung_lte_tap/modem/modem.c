@@ -59,7 +59,8 @@ _find_nws:
   w = strstr(f, nws);
   if(w != NULL) {
     s = atoi(w+strlen(nws));
-    nwstate = s;
+    if(s>nwstate)
+      nwstate = s;
     //printf("**************************** nwstate=%d\n", s);
     f = w+strlen(nws);
     goto _find_nws;
@@ -117,7 +118,6 @@ void modem_process(unsigned char *apn)
             //printf("waiting, nwstate=%d\n", nwstate);
             // send CSQ
             //send_at_cmd(atcmd[16]);
-
           }
          } else {
           // not 18
@@ -127,6 +127,7 @@ void modem_process(unsigned char *apn)
          }
       }
       //sleep(1);
+      usleep(100);
     
     }else {
       //printf("connected\n");
