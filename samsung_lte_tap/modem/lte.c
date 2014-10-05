@@ -158,6 +158,9 @@ libusb_device_handle *init_modem(int debug)
 
 void connected()
 {
+  if(!isconn) {
+    printf("connected\n");
+  }
   isconn=1;
 }
 
