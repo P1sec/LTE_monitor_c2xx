@@ -69,7 +69,7 @@ int process_response(void *dev, const unsigned char *thebuf, int len)
     if(buf[1] == 0x43 || buf[1] == 0x44 || buf[1] == 0x50) {
       check_len += 2;
     }
-    printf("check_len %d\n", check_len);
+    //printf("check_len %d\n", check_len);
 
     switch (buf[1]) {
     case 0x43:
