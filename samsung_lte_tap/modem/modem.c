@@ -38,6 +38,7 @@ unsigned char *atcmd[] = {
 int state=1;
 int nwstate = 0;
 int err=0;
+int cgact_1_0=0;
 atctx_t *mctx;
 
 
@@ -46,12 +47,14 @@ void modem_response(char *c, int len)
 {
   int i;
   const char *nws="+NWSTATEIND: ";
+  const char *cgact="+CGACT:1,0";
+
   int s;
   char *w;
   char *f;
 
-  //printf("received: (%d)\n",len);
-  //printf("###\n%s\n###\n",c);
+  // printf("received: (%d)\n",len);
+  // printf("###\n%s\n###\n",c);
 
   // +NWSTATEIND:
   f = c;
@@ -64,6 +67,12 @@ _find_nws:
     //printf("**************************** nwstate=%d\n", s);
     f = w+strlen(nws);
     goto _find_nws;
+  }
+
+  w = strstr(c, nws);
+  if(w != NULL) {
+    // printf("**************************** cgact=1,0\n");
+    cgact_1_0=1;   
   }
 
   c[len] = 0;

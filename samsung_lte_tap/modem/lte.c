@@ -197,8 +197,19 @@ void release_usb_device(libusb_device_handle *devhb)
   libusb_exit(context);
 }
 
-
-
+extern int cgact_1_0;
+void unattach()
+{
+  send_at_cmd("AT+CGATT=0");
+  for(;;)
+  {
+    if(cgact_1_0) {
+      // printf("cgact_1_0\n");
+      release_usb_device(devh);
+      exit(EXIT_SUCCESS);
+    }
+  }
+}
 
 static int read_tap()
 {
@@ -441,10 +452,12 @@ int main(int argc, char **argv)
     return -1;
   }
 
+  signal(SIGINT, unattach);
+
   modem_at_init();
 
   libusb_init(&context);
-  libusb_set_debug(context, 3);
+  // libusb_set_debug(context, 3);
   devh = init_modem(debug);
 
 
