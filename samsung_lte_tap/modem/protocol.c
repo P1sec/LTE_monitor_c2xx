@@ -60,8 +60,12 @@ int process_response(void *dev, const unsigned char *thebuf, int len)
   }
   //hexprintf(buf,len); 
   while(buf < thebuf + len){
+    if(buf[0] == 0x08) {
+      return -1;
+    }
+
     if(buf[0] != 0x57) {
-      printf( "bad header\n");
+      printf( "bad header %02x\n", buf[0]);
       return -1;
     }
 
@@ -84,8 +88,12 @@ int process_response(void *dev, const unsigned char *thebuf, int len)
     case 0x50:
       process_P_response(dev, buf, check_len);
       break;
+    // junk ?
+    case 0x5a:
+      break;
     default:
       printf("bad response type: %02x\n", buf[1]);
+      hexprintf(buf,len);
     }
     buf += check_len; 
   }
