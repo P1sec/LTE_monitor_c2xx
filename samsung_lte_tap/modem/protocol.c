@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern int debug;
+
 int process_config_response(void *dev, const unsigned char *buf, int len)
 {
   //printf("Config:\n");
@@ -77,7 +79,9 @@ int process_response(void *dev, const unsigned char *thebuf, int len)
 
     switch (buf[1]) {
     case 0x43:
-      process_config_response(dev, buf, check_len);
+      if(debug) {
+        process_config_response(dev, buf, check_len);
+      } 
       break;
     case 0x44:
       //return process_data_response(dev, buf, len);

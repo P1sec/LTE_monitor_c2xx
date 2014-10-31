@@ -62,6 +62,8 @@ static struct pollfd* fds = NULL;
 libusb_context *context=NULL;
 struct libusb_transfer *trans=NULL;
 
+int debug=0;
+
 int process_response(void *dev, const unsigned char *buf, int len);
 
 
@@ -430,7 +432,7 @@ int main(int argc, char **argv)
   char *debug_ip = NULL;
   char *apn=NULL;
   int c;
-  int debug=0;
+  debug=0;
 
   opterr = 0;
   while ((c = getopt (argc, argv, "va:d:")) != -1){
