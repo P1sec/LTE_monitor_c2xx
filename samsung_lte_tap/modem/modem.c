@@ -69,7 +69,7 @@ _find_nws:
     goto _find_nws;
   }
 
-  w = strstr(c, nws);
+  w = strstr(c, cgact);
   if(w != NULL) {
     // printf("**************************** cgact=1,0\n");
     cgact_1_0=1;   
