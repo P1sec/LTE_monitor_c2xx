@@ -93,12 +93,14 @@ void send_at_cmd(char *c)
   
 }
 
-void modem_process(unsigned char *apn)
+void modem_process(unsigned char *apn, char *pin)
 {
   
   static int curstate = 0;
   char myapn[]="AT+CGDCONT=1,\"IP\",\"%s\"";
+  char mypin[]="AT+CPIN=\"%s\"";
   char tmp[200];
+
 
   //printf("in state %d %d\n", state, curstate);
 
@@ -111,10 +113,16 @@ void modem_process(unsigned char *apn)
   if(curstate != state){
     if(state <= 18){
       //printf("not completed\n");
+      if(pin && (state == 10)) {
+          printf("sending custom pin, if needed\n");
+          sprintf(tmp,mypin,pin);
+          send_at_cmd(tmp);
+          curstate = state;
+      }
       if(state == 17){
           printf("sending custom apn, if needed\n");
           sprintf(tmp,myapn,apn);
-          send_at_cmd(tmp);          
+          send_at_cmd(tmp);
           curstate = state;
       } else {
 	       if(state == 18) {

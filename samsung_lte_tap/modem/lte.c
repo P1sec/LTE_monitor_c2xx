@@ -431,11 +431,12 @@ int main(int argc, char **argv)
   int received,r;
   char *debug_ip = NULL;
   char *apn=NULL;
+  char *pin=NULL;
   int c;
   debug=0;
 
   opterr = 0;
-  while ((c = getopt (argc, argv, "va:d:")) != -1){
+  while ((c = getopt (argc, argv, "va:d:p:")) != -1){
     switch (c){
     case 'v':
       break;
@@ -446,11 +447,14 @@ int main(int argc, char **argv)
     case 'a':
       apn = optarg;
       break;
+    case 'p':
+      pin = optarg;
+      break;
     }
   }
   
   if(!apn){
-    printf("Usage: ./lte -a APN_NAME [-d GSM_TAP_IP]\nex: ./lte -a orange.fr [-d 192.168.0.1]\n");
+    printf("Usage: ./lte -a APN_NAME [-p PIN] [-d GSM_TAP_IP]\nex: ./lte -a orange.fr [-d 192.168.0.1]\n");
     return -1;
   }
 
@@ -480,7 +484,7 @@ int main(int argc, char **argv)
   while(1){
     process_events_once(100);
     //  printf(".\n");
-    modem_process(apn);
+    modem_process(apn, pin);
   }
 
   release_usb_device(devh);
